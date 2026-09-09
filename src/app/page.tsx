@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import Sidebar, { type ActiveTab } from "@/components/Sidebar";
 import Header from "@/components/Header";
 import OverviewTab from "@/components/OverviewTab";
@@ -16,61 +16,6 @@ import {
   type Alert,
 } from "@/lib/mockData";
 
-// Simulate real-time sensor data fluctuation
-function mutateTelemetry(nodes: SensorNode[]): SensorNode[] {
-  return nodes.map((node) => {
-    if (node.status === "Offline") return node;
-
-    const rand = (base: number, range: number, min = 0, max = Infinity) =>
-      parseFloat(
-        Math.min(max, Math.max(min, base + (Math.random() - 0.5) * range)).toFixed(2)
-      );
-
-    const newWaterLevel = rand(node.telemetry.waterLevel, 0.08, 0);
-    const newAqi = Math.round(rand(node.telemetry.aqi, 5, 0, 500));
-    const newTemp = rand(node.telemetry.temperature, 0.3, -10, 60);
-    const newSoilMoisture = Math.round(rand(node.telemetry.soilMoisture, 2, 0, 100));
-    const newGasPpm = Math.round(rand(node.telemetry.gasPpm, 15, 0, 800));
-    const newRainfall = Math.max(0, rand(node.telemetry.rainfall, 1.5, 0, 100));
-    const newHumidity = Math.round(rand(node.telemetry.humidity, 2, 0, 100));
-
-    // Update history — push new reading, remove oldest
-    const lastEntry = node.history[node.history.length - 1];
-    const now = new Date();
-    const newHistoryEntry = {
-      time: `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`,
-      waterLevel: newWaterLevel,
-      aqi: newAqi,
-      temperature: newTemp,
-      soilMoisture: newSoilMoisture,
-    };
-
-    // Only push if time changed
-    const newHistory =
-      lastEntry.time !== newHistoryEntry.time
-        ? [...node.history.slice(1), newHistoryEntry]
-        : node.history.map((h, i) =>
-            i === node.history.length - 1 ? newHistoryEntry : h
-          );
-
-    return {
-      ...node,
-      telemetry: {
-        ...node.telemetry,
-        waterLevel: newWaterLevel,
-        aqi: newAqi,
-        temperature: newTemp,
-        soilMoisture: newSoilMoisture,
-        gasPpm: newGasPpm,
-        rainfall: newRainfall,
-        humidity: newHumidity,
-      },
-      history: newHistory,
-      lastSync: `${Math.floor(Math.random() * 60 + 1)}s ago`,
-    };
-  });
-}
-
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<ActiveTab>("overview");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -79,44 +24,6 @@ export default function Dashboard() {
   const [selectedNode, setSelectedNode] = useState<SensorNode | null>(null);
   const [drawerNode, setDrawerNode] = useState<SensorNode | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  // Simulate real-time data streaming (every 3 seconds)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setNodes((prev) => mutateTelemetry(prev));
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Simulate occasional new alert (every ~30 seconds)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const shouldTrigger = Math.random() > 0.6;
-      if (!shouldTrigger) return;
-
-      const randomNode = nodes[Math.floor(Math.random() * nodes.length)];
-      if (randomNode.status === "Offline" || randomNode.inference.riskLevel === "Normal")
-        return;
-
-      const newAlert: Alert = {
-        id: `ALT-${Date.now()}`,
-        nodeId: randomNode.id,
-        nodeName: randomNode.name,
-        zone: randomNode.location.zone,
-        hazardType: randomNode.inference.hazardType,
-        riskLevel: randomNode.inference.riskLevel,
-        confidence: Math.round(70 + Math.random() * 25),
-        timestamp: new Date().toISOString(),
-        message: `Updated inference: ${randomNode.inference.hazardType} risk persists at ${randomNode.name}.`,
-        recommendation: randomNode.inference.recommendation,
-        acknowledged: false,
-        notified: false,
-      };
-
-      setAlerts((prev) => [newAlert, ...prev.slice(0, 19)]);
-    }, 30000);
-    return () => clearInterval(interval);
-  }, [nodes]);
 
   const handleNodeClick = useCallback((node: SensorNode) => {
     setSelectedNode(node);
@@ -145,11 +52,11 @@ export default function Dashboard() {
   ).length;
 
   return (
-    <div className="flex min-h-screen bg-slate-950 overflow-hidden">
+    <div className="flex min-h-screen bg-slate-100/60 text-slate-900 overflow-hidden font-sans">
       {/* Mobile Sidebar Overlay */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black/70 z-40 lg:hidden"
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-40 lg:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
@@ -175,7 +82,7 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-50/50">
         {/* Header */}
         <Header
           criticalAlerts={criticalCount}
@@ -188,16 +95,16 @@ export default function Dashboard() {
         />
 
         {/* Mobile top bar */}
-        <div className="lg:hidden flex items-center gap-3 px-4 py-2 bg-slate-900/80 border-b border-slate-700/40">
+        <div className="lg:hidden flex items-center gap-3 px-4 py-2.5 bg-white border-b border-slate-200">
           <button
             onClick={() => setMobileMenuOpen(true)}
-            className="p-1.5 text-slate-400 hover:text-white bg-slate-800 rounded-lg"
+            className="p-1.5 text-slate-600 hover:text-slate-900 bg-slate-100 rounded-lg"
           >
             <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M3 6h12M3 12h12M3 18h12" />
             </svg>
           </button>
-          <span className="text-sm font-bold text-white">
+          <span className="text-sm font-bold text-slate-900">
             {activeTab === "overview"
               ? "Overview"
               : activeTab === "riskmap"
@@ -236,9 +143,9 @@ export default function Dashboard() {
             {activeTab === "alerts" && (
               <div>
                 <div className="mb-4">
-                  <h2 className="text-lg font-black text-white">Alert Feed</h2>
-                  <p className="text-xs text-slate-500">
-                    Real-time Edge AI inference alerts from all sensor nodes
+                  <h2 className="text-lg font-black text-slate-900">Edge AI Alert Feed</h2>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Recorded risk assessments captured at synchronized 30-minute intervals
                   </p>
                 </div>
                 <AlertsFeed
@@ -252,12 +159,12 @@ export default function Dashboard() {
             {activeTab === "nodes" && (
               <div>
                 <div className="mb-4">
-                  <h2 className="text-lg font-black text-white">
+                  <h2 className="text-lg font-black text-slate-900">
                     Node Management
                   </h2>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-slate-500 font-medium">
                     Monitor and manage all ESP32 sensor nodes in the network.
-                    Click a node for details.
+                    Click a node for detailed 30-min telemetry.
                   </p>
                 </div>
                 <NodeManagement
@@ -270,9 +177,9 @@ export default function Dashboard() {
             {activeTab === "settings" && (
               <div>
                 <div className="mb-4">
-                  <h2 className="text-lg font-black text-white">Settings</h2>
-                  <p className="text-xs text-slate-500">
-                    System configuration and preferences
+                  <h2 className="text-lg font-black text-slate-900">Settings</h2>
+                  <p className="text-xs text-slate-500 font-medium">
+                    System configuration and telemetry capture preferences
                   </p>
                 </div>
                 <SettingsPanel />
@@ -282,33 +189,33 @@ export default function Dashboard() {
         </main>
 
         {/* Footer / Status Bar */}
-        <footer className="border-t border-slate-700/40 bg-slate-900/80 px-4 md:px-6 py-2">
+        <footer className="border-t border-slate-200 bg-white px-4 md:px-6 py-2 shadow-xs">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-4 flex-wrap">
               <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-node-pulse" />
-                <span className="text-[10px] text-slate-500">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-node-pulse" />
+                <span className="text-[11px] text-slate-600 font-semibold">
                   System Operational
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-teal-400" />
-                <span className="text-[10px] text-slate-500">
+                <div className="w-2 h-2 rounded-full bg-teal-500" />
+                <span className="text-[11px] text-slate-600 font-medium">
                   Gateway: 192.168.1.254
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                <span className="text-[10px] text-slate-500">
-                  MQTT: Connected
+                <div className="w-2 h-2 rounded-full bg-blue-500" />
+                <span className="text-[11px] text-slate-600 font-medium">
+                  Telemetry Sampling: 30-min interval
                 </span>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-[10px] text-slate-600">
+              <span className="text-[11px] text-slate-500 font-mono">
                 EnvNet OS v4.1.2
               </span>
-              <span className="text-[10px] text-slate-600">
+              <span className="text-[11px] text-slate-400">
                 © 2024 Environmental Intelligence Network
               </span>
             </div>

@@ -8,26 +8,27 @@ import {
   Shield,
   Database,
   Cpu,
-  Moon,
+  Sun,
   Volume2,
   Radio,
   Save,
   RotateCcw,
+  Timer,
 } from "lucide-react";
 
 function Toggle({ defaultOn = true, label }: { defaultOn?: boolean; label: string }) {
   const [on, setOn] = useState(defaultOn);
   return (
-    <div className="flex items-center justify-between py-2.5 border-b border-slate-700/30 last:border-0">
-      <span className="text-xs text-slate-300">{label}</span>
+    <div className="flex items-center justify-between py-2.5 border-b border-slate-100 last:border-0">
+      <span className="text-xs text-slate-700 font-medium">{label}</span>
       <button
         onClick={() => setOn(!on)}
-        className={`relative w-10 h-5 rounded-full transition-all duration-200 ${
-          on ? "bg-teal-500" : "bg-slate-600"
+        className={`relative w-10 h-5.5 rounded-full transition-all duration-200 ${
+          on ? "bg-teal-600" : "bg-slate-300"
         }`}
       >
         <div
-          className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all duration-200 ${
+          className={`absolute top-0.5 w-4.5 h-4.5 rounded-full bg-white shadow-sm transition-all duration-200 ${
             on ? "left-5" : "left-0.5"
           }`}
         />
@@ -51,8 +52,8 @@ function NumberInput({
 }) {
   const [val, setVal] = useState(defaultVal);
   return (
-    <div className="flex items-center justify-between py-2.5 border-b border-slate-700/30 last:border-0">
-      <span className="text-xs text-slate-300">{label}</span>
+    <div className="flex items-center justify-between py-2.5 border-b border-slate-100 last:border-0">
+      <span className="text-xs text-slate-700 font-medium">{label}</span>
       <div className="flex items-center gap-2">
         <input
           type="number"
@@ -60,9 +61,9 @@ function NumberInput({
           max={max}
           value={val}
           onChange={(e) => setVal(Number(e.target.value))}
-          className="w-16 bg-slate-900/60 border border-slate-700/40 text-sm text-white text-right rounded-lg px-2 py-1 outline-none focus:border-teal-500/50 font-mono"
+          className="w-16 bg-slate-50 border border-slate-200 text-sm text-slate-900 text-right rounded-lg px-2 py-1 outline-none focus:border-teal-500 font-mono font-bold"
         />
-        <span className="text-[10px] text-slate-500 w-8">{unit}</span>
+        <span className="text-[10px] text-slate-500 font-semibold w-8">{unit}</span>
       </div>
     </div>
   );
@@ -76,10 +77,10 @@ interface SectionProps {
 
 function Section({ title, icon, children }: SectionProps) {
   return (
-    <div className="bg-slate-800/50 border border-slate-700/60 rounded-xl overflow-hidden">
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-700/40 bg-slate-900/30">
-        <span className="text-teal-400">{icon}</span>
-        <p className="text-xs font-bold text-white uppercase tracking-wider">{title}</p>
+    <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
+      <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-100 bg-slate-50/70">
+        <span className="text-teal-600">{icon}</span>
+        <p className="text-xs font-bold text-slate-900 uppercase tracking-wider">{title}</p>
       </div>
       <div className="px-4 py-1">{children}</div>
     </div>
@@ -97,26 +98,26 @@ export default function SettingsPanel() {
   return (
     <div className="max-w-3xl space-y-4">
       <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-teal-500/15 border border-teal-500/30 flex items-center justify-center">
-            <Settings size={16} className="text-teal-400" />
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-xl bg-teal-50 border border-teal-200 flex items-center justify-center">
+            <Settings size={18} className="text-teal-600" />
           </div>
           <div>
-            <p className="text-sm font-bold text-white">System Configuration</p>
-            <p className="text-[10px] text-slate-500">EnvNet Control Center settings</p>
+            <p className="text-sm font-bold text-slate-900">System Configuration</p>
+            <p className="text-[10px] text-slate-500 font-medium">EnvNet Control Center settings</p>
           </div>
         </div>
         <div className="flex gap-2">
-          <button className="flex items-center gap-1.5 text-xs px-3 py-1.5 bg-slate-700/60 border border-slate-600/40 text-slate-400 rounded-lg hover:text-white transition-colors">
+          <button className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 bg-slate-100 border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-200 transition-colors shadow-xs">
             <RotateCcw size={12} />
             Reset
           </button>
           <button
             onClick={handleSave}
-            className={`flex items-center gap-1.5 text-xs px-3 py-1.5 border rounded-lg transition-all ${
+            className={`flex items-center gap-1.5 text-xs font-bold px-3.5 py-1.5 border rounded-xl transition-all shadow-xs ${
               saved
-                ? "bg-green-500/20 border-green-500/40 text-green-400"
-                : "bg-teal-500/15 border-teal-500/30 text-teal-400 hover:bg-teal-500/25"
+                ? "bg-emerald-50 border-emerald-300 text-emerald-700"
+                : "bg-teal-600 border-teal-600 text-white hover:bg-teal-700"
             }`}
           >
             <Save size={12} />
@@ -124,6 +125,14 @@ export default function SettingsPanel() {
           </button>
         </div>
       </div>
+
+      {/* Telemetry Interval Configuration */}
+      <Section title="Telemetry Capture & Polling" icon={<Timer size={14} />}>
+        <NumberInput label="Telemetry Capture Interval" defaultVal={30} min={5} max={180} unit="min" />
+        <NumberInput label="Batch Upload Frequency" defaultVal={30} min={15} max={120} unit="min" />
+        <Toggle label="Enable 30-Minute Synchronized Sampling" defaultOn={true} />
+        <Toggle label="Buffer Offline Telemetry locally (up to 48 hours)" defaultOn={true} />
+      </Section>
 
       {/* Alert Thresholds */}
       <Section title="Alert Thresholds" icon={<Bell size={14} />}>
@@ -146,7 +155,6 @@ export default function SettingsPanel() {
 
       {/* Network Settings */}
       <Section title="Network & Gateway" icon={<Wifi size={14} />}>
-        <NumberInput label="Node Polling Interval" defaultVal={30} min={5} max={300} unit="sec" />
         <NumberInput label="Offline Timeout Threshold" defaultVal={120} min={30} max={600} unit="sec" />
         <NumberInput label="Max Reconnect Attempts" defaultVal={5} min={1} max={20} unit="×" />
         <Toggle label="LoRa Fallback Mode" defaultOn={true} />
@@ -159,7 +167,7 @@ export default function SettingsPanel() {
         <Toggle label="Enable Edge Inference on Nodes" defaultOn={true} />
         <Toggle label="Cloud Fallback Inference" defaultOn={false} />
         <Toggle label="Auto-Update AI Models OTA" defaultOn={true} />
-        <NumberInput label="Inference Interval" defaultVal={60} min={10} max={3600} unit="sec" />
+        <NumberInput label="Inference Interval" defaultVal={30} min={5} max={120} unit="min" />
         <NumberInput label="Confidence Score Minimum" defaultVal={65} min={40} max={99} unit="%" />
       </Section>
 
@@ -172,13 +180,12 @@ export default function SettingsPanel() {
       </Section>
 
       {/* Display */}
-      <Section title="Display & UI" icon={<Moon size={14} />}>
-        <Toggle label="Dark Mode" defaultOn={true} />
+      <Section title="Display & Theme" icon={<Sun size={14} />}>
+        <Toggle label="Light Theme Mode" defaultOn={true} />
         <Toggle label="Animated Node Pulse" defaultOn={true} />
-        <Toggle label="Real-time Chart Updates" defaultOn={true} />
+        <Toggle label="OpenFreeMap Tile Layer" defaultOn={true} />
         <Toggle label="Show Offline Nodes on Map" defaultOn={true} />
-        <NumberInput label="Chart History Duration" defaultVal={24} min={1} max={168} unit="hrs" />
-        <NumberInput label="Alert Feed Max Items" defaultVal={50} min={10} max={200} unit="rows" />
+        <NumberInput label="Chart History Duration" defaultVal={12} min={1} max={168} unit="hrs" />
       </Section>
 
       {/* Data */}
@@ -193,15 +200,14 @@ export default function SettingsPanel() {
       <Section title="Gateway Status" icon={<Radio size={14} />}>
         <div className="py-3 space-y-2">
           {[
-            { label: "Gateway IP", value: "192.168.1.254", color: "text-teal-400" },
-            { label: "Protocol", value: "MQTT over TLS 1.3", color: "text-blue-400" },
-            { label: "Message Broker", value: "Mosquitto v2.0.18", color: "text-slate-300" },
-            { label: "Active Subscriptions", value: "42 topics", color: "text-green-400" },
-            { label: "Uptime", value: "14d 7h 22m", color: "text-slate-300" },
-            { label: "Messages/sec", value: "~128 msg/s", color: "text-purple-400" },
+            { label: "Gateway IP", value: "192.168.1.254", color: "text-teal-600" },
+            { label: "Protocol", value: "MQTT / HTTP Periodic Batches", color: "text-blue-600" },
+            { label: "Interval", value: "30-minute cycles", color: "text-slate-800 font-bold" },
+            { label: "Active Nodes", value: "42 connected", color: "text-emerald-600" },
+            { label: "Uptime", value: "14d 7h 22m", color: "text-slate-700" },
           ].map((item) => (
             <div key={item.label} className="flex items-center justify-between">
-              <span className="text-[10px] text-slate-500">{item.label}</span>
+              <span className="text-[10px] text-slate-500 font-medium">{item.label}</span>
               <span className={`text-[10px] font-mono font-bold ${item.color}`}>{item.value}</span>
             </div>
           ))}

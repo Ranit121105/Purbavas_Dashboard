@@ -18,6 +18,7 @@ import {
   Droplets,
   Waves,
   Wind,
+  Timer,
 } from "lucide-react";
 import type { SensorNode, NodeStatus, RiskLevel } from "@/lib/mockData";
 
@@ -28,34 +29,34 @@ interface NodeManagementProps {
 
 const STATUS_STYLE: Record<NodeStatus, { color: string; icon: React.ReactNode; bg: string }> = {
   Online: {
-    color: "text-green-400",
+    color: "text-emerald-700",
     icon: <Wifi size={12} />,
-    bg: "bg-green-500/10 border-green-500/30",
+    bg: "bg-emerald-50 border-emerald-200",
   },
   Offline: {
-    color: "text-red-400",
+    color: "text-red-700",
     icon: <WifiOff size={12} />,
-    bg: "bg-red-500/10 border-red-500/30",
+    bg: "bg-red-50 border-red-200",
   },
   "Low-Bandwidth": {
-    color: "text-yellow-400",
+    color: "text-amber-700",
     icon: <Signal size={12} />,
-    bg: "bg-yellow-500/10 border-yellow-500/30",
+    bg: "bg-amber-50 border-amber-200",
   },
 };
 
 const RISK_COLOR: Record<RiskLevel, string> = {
-  Normal: "text-green-400",
-  "Precursor Detected": "text-yellow-400",
-  Alert: "text-orange-400",
-  Critical: "text-red-400",
+  Normal: "text-emerald-700",
+  "Precursor Detected": "text-amber-700",
+  Alert: "text-orange-700",
+  Critical: "text-red-700",
 };
 
 const RISK_BG: Record<RiskLevel, string> = {
-  Normal: "bg-green-500/10 border-green-500/20",
-  "Precursor Detected": "bg-yellow-500/10 border-yellow-500/20",
-  Alert: "bg-orange-500/10 border-orange-500/20",
-  Critical: "bg-red-500/10 border-red-500/20",
+  Normal: "bg-emerald-50 border-emerald-200",
+  "Precursor Detected": "bg-amber-50 border-amber-200",
+  Alert: "bg-orange-50 border-orange-200",
+  Critical: "bg-red-50 border-red-200",
 };
 
 export default function NodeManagement({ nodes, onNodeSelect }: NodeManagementProps) {
@@ -88,44 +89,44 @@ export default function NodeManagement({ nodes, onNodeSelect }: NodeManagementPr
       {/* Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         {[
-          { label: "Online", value: stats.online, color: "text-green-400", bg: "bg-green-500/10 border-green-500/20", icon: <Wifi size={14} /> },
-          { label: "Offline", value: stats.offline, color: "text-red-400", bg: "bg-red-500/10 border-red-500/20", icon: <WifiOff size={14} /> },
-          { label: "Low-BW", value: stats.lowBand, color: "text-yellow-400", bg: "bg-yellow-500/10 border-yellow-500/20", icon: <Signal size={14} /> },
-          { label: "Critical", value: stats.critical, color: "text-red-400", bg: "bg-red-500/15 border-red-500/30", icon: <AlertTriangle size={14} /> },
-          { label: "Alerts", value: stats.alert, color: "text-orange-400", bg: "bg-orange-500/10 border-orange-500/20", icon: <CheckCircle size={14} /> },
+          { label: "Online Nodes", value: stats.online, color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-200", icon: <Wifi size={15} /> },
+          { label: "Offline Nodes", value: stats.offline, color: "text-red-600", bg: "bg-red-50 border-red-200", icon: <WifiOff size={15} /> },
+          { label: "Low-Bandwidth", value: stats.lowBand, color: "text-amber-600", bg: "bg-amber-50 border-amber-200", icon: <Signal size={15} /> },
+          { label: "Critical Risk", value: stats.critical, color: "text-red-600", bg: "bg-red-50 border-red-200", icon: <AlertTriangle size={15} /> },
+          { label: "Alert Hazards", value: stats.alert, color: "text-orange-600", bg: "bg-orange-50 border-orange-200", icon: <CheckCircle size={15} /> },
         ].map((s) => (
-          <div key={s.label} className={`${s.bg} border rounded-xl px-3 py-2.5 flex items-center gap-2.5`}>
+          <div key={s.label} className={`${s.bg} border rounded-2xl px-3.5 py-3 flex items-center gap-3 shadow-xs`}>
             <span className={s.color}>{s.icon}</span>
             <div>
-              <p className="text-lg font-black text-white leading-tight">{s.value}</p>
-              <p className="text-[10px] text-slate-500">{s.label}</p>
+              <p className="text-xl font-black text-slate-900 leading-tight">{s.value}</p>
+              <p className="text-[10px] text-slate-600 font-semibold">{s.label}</p>
             </div>
           </div>
         ))}
       </div>
 
       {/* Controls */}
-      <div className="bg-slate-800/50 border border-slate-700/60 rounded-xl p-4">
+      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
         <div className="flex flex-col sm:flex-row gap-3">
           {/* Search */}
           <div className="relative flex-1">
-            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               placeholder="Search nodes by name, ID, or zone..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-slate-900/60 border border-slate-700/40 text-sm text-white placeholder-slate-600 rounded-lg pl-8 pr-3 py-2 outline-none focus:border-teal-500/50 transition-colors"
+              className="w-full bg-slate-50 border border-slate-200 text-sm text-slate-900 placeholder-slate-400 rounded-xl pl-9 pr-3 py-2 outline-none focus:border-teal-500 focus:bg-white transition-colors"
             />
           </div>
 
           {/* Status Filter */}
           <div className="flex items-center gap-2">
-            <Filter size={13} className="text-slate-500 shrink-0" />
+            <Filter size={14} className="text-slate-400 shrink-0" />
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as NodeStatus | "All")}
-              className="bg-slate-900/60 border border-slate-700/40 text-sm text-slate-300 rounded-lg px-2 py-2 outline-none"
+              className="bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-700 rounded-xl px-2.5 py-2 outline-none cursor-pointer"
             >
               <option value="All">All Status</option>
               <option value="Online">Online</option>
@@ -138,7 +139,7 @@ export default function NodeManagement({ nodes, onNodeSelect }: NodeManagementPr
           <select
             value={riskFilter}
             onChange={(e) => setRiskFilter(e.target.value as RiskLevel | "All")}
-            className="bg-slate-900/60 border border-slate-700/40 text-sm text-slate-300 rounded-lg px-2 py-2 outline-none"
+            className="bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-700 rounded-xl px-2.5 py-2 outline-none cursor-pointer"
           >
             <option value="All">All Risk Levels</option>
             <option value="Critical">Critical</option>
@@ -148,15 +149,15 @@ export default function NodeManagement({ nodes, onNodeSelect }: NodeManagementPr
           </select>
 
           {/* View Toggle */}
-          <div className="flex bg-slate-900/60 border border-slate-700/40 rounded-lg overflow-hidden">
+          <div className="flex bg-slate-100 border border-slate-200 rounded-xl p-0.5">
             {(["grid", "table"] as const).map((v) => (
               <button
                 key={v}
                 onClick={() => setView(v)}
-                className={`px-3 py-2 text-xs font-medium capitalize transition-all ${
+                className={`px-3 py-1.5 text-xs font-bold capitalize transition-all rounded-lg ${
                   view === v
-                    ? "bg-slate-700 text-white"
-                    : "text-slate-500 hover:text-slate-300"
+                    ? "bg-white text-slate-900 shadow-xs"
+                    : "text-slate-500 hover:text-slate-800"
                 }`}
               >
                 {v}
@@ -179,72 +180,72 @@ export default function NodeManagement({ nodes, onNodeSelect }: NodeManagementPr
               <button
                 key={node.id}
                 onClick={() => onNodeSelect(node)}
-                className={`text-left bg-slate-800/50 border rounded-xl p-3.5 hover:bg-slate-700/50 transition-all group ${
+                className={`text-left bg-white border rounded-2xl p-4 hover:shadow-md transition-all group shadow-xs ${
                   isCritical
-                    ? "border-red-500/40 glow-red"
-                    : "border-slate-700/60 hover:border-slate-600/60"
+                    ? "border-red-300 ring-1 ring-red-200"
+                    : "border-slate-200 hover:border-slate-300"
                 }`}
               >
                 {/* Top */}
                 <div className="flex items-start justify-between mb-2.5">
                   <div>
-                    <p className="text-xs font-bold text-white group-hover:text-teal-400 transition-colors">
+                    <p className="text-xs font-bold text-slate-900 group-hover:text-teal-600 transition-colors">
                       {node.name}
                     </p>
-                    <p className="text-[9px] font-mono text-slate-500">{node.id}</p>
+                    <p className="text-[10px] font-mono text-slate-500 font-medium">{node.id}</p>
                   </div>
-                  <div className={`flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${statusStyle.bg} ${statusStyle.color}`}>
+                  <div className={`flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border ${statusStyle.bg} ${statusStyle.color}`}>
                     {statusStyle.icon}
                     {node.status}
                   </div>
                 </div>
 
                 {/* Risk Badge */}
-                <div className={`inline-flex items-center gap-1.5 text-[9px] font-bold px-2 py-1 rounded-lg border mb-2.5 ${riskBg} ${riskColor}`}>
+                <div className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-xl border mb-3 ${riskBg} ${riskColor}`}>
                   {node.inference.riskLevel !== "Normal" && (
-                    <AlertTriangle size={9} />
+                    <AlertTriangle size={11} />
                   )}
                   {node.inference.riskLevel}
                   {node.inference.confidence > 0 && (
-                    <span className="opacity-70">· {node.inference.confidence}%</span>
+                    <span className="opacity-80">· {node.inference.confidence}%</span>
                   )}
                 </div>
 
                 {/* Telemetry Grid */}
-                <div className="grid grid-cols-2 gap-1.5 mb-2.5">
+                <div className="grid grid-cols-2 gap-1.5 mb-3">
                   {[
-                    { icon: <Thermometer size={10} />, label: "Temp", value: `${node.telemetry.temperature}°C`, color: "text-orange-400" },
-                    { icon: <Droplets size={10} />, label: "Humid", value: `${node.telemetry.humidity}%`, color: "text-blue-400" },
-                    { icon: <Waves size={10} />, label: "Water", value: `${node.telemetry.waterLevel}m`, color: "text-teal-400" },
-                    { icon: <Wind size={10} />, label: "AQI", value: `${node.telemetry.aqi}`, color: "text-purple-400" },
+                    { icon: <Thermometer size={11} />, label: "Temp", value: `${node.telemetry.temperature}°C`, color: "text-orange-600" },
+                    { icon: <Droplets size={11} />, label: "Humid", value: `${node.telemetry.humidity}%`, color: "text-blue-600" },
+                    { icon: <Waves size={11} />, label: "Water", value: `${node.telemetry.waterLevel}m`, color: "text-teal-600" },
+                    { icon: <Wind size={11} />, label: "AQI", value: `${node.telemetry.aqi}`, color: "text-purple-600" },
                   ].map((t) => (
-                    <div key={t.label} className="bg-slate-900/40 rounded-lg px-2 py-1.5 flex items-center gap-1.5">
+                    <div key={t.label} className="bg-slate-50 rounded-xl px-2 py-1.5 flex items-center gap-1.5 border border-slate-100">
                       <span className={t.color}>{t.icon}</span>
                       <div>
-                        <p className="text-[8px] text-slate-600">{t.label}</p>
-                        <p className="text-[10px] font-bold text-white">{t.value}</p>
+                        <p className="text-[8px] text-slate-500 font-medium">{t.label}</p>
+                        <p className="text-[10px] font-bold text-slate-800">{t.value}</p>
                       </div>
                     </div>
                   ))}
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between pt-1 border-t border-slate-100">
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-0.5">
-                      <Battery size={10} className={node.batteryLevel > 50 ? "text-green-400" : node.batteryLevel > 25 ? "text-yellow-400" : "text-red-400"} />
-                      <span className="text-[9px] text-slate-500">{node.batteryLevel}%</span>
+                      <Battery size={11} className={node.batteryLevel > 50 ? "text-emerald-600" : node.batteryLevel > 25 ? "text-amber-600" : "text-red-600"} />
+                      <span className="text-[9px] text-slate-500 font-semibold">{node.batteryLevel}%</span>
                     </div>
                     <div className="flex items-center gap-0.5">
-                      <Sun size={10} className="text-yellow-400" />
-                      <span className="text-[9px] text-slate-500">{node.solarInput}W</span>
+                      <Sun size={11} className="text-amber-500" />
+                      <span className="text-[9px] text-slate-500 font-semibold">{node.solarInput}W</span>
                     </div>
                     <div className="flex items-center gap-0.5">
-                      <Clock size={10} className="text-blue-400" />
-                      <span className="text-[9px] text-slate-500">{node.lastSync}</span>
+                      <Timer size={11} className="text-teal-600" />
+                      <span className="text-[9px] text-slate-500 font-semibold">30m</span>
                     </div>
                   </div>
-                  <ChevronRight size={12} className="text-slate-600 group-hover:text-teal-400 transition-colors" />
+                  <ChevronRight size={13} className="text-slate-400 group-hover:text-teal-600 transition-colors" />
                 </div>
               </button>
             );
@@ -252,85 +253,85 @@ export default function NodeManagement({ nodes, onNodeSelect }: NodeManagementPr
         </div>
       ) : (
         /* Table View */
-        <div className="bg-slate-800/50 border border-slate-700/60 rounded-xl overflow-hidden">
+        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr className="border-b border-slate-700/40 bg-slate-900/40">
-                  {["Node", "Zone", "Status", "Risk", "AI Confidence", "Temp", "AQI", "Water", "Battery", "Last Sync", ""].map((h) => (
-                    <th key={h} className="px-3 py-2.5 text-left text-[9px] text-slate-500 uppercase tracking-widest font-bold whitespace-nowrap">
+                <tr className="border-b border-slate-200 bg-slate-50">
+                  {["Node", "Zone", "Status", "Risk Level", "AI Confidence", "Temp", "AQI", "Water", "Battery", "Capture", ""].map((h) => (
+                    <th key={h} className="px-3.5 py-3 text-left text-[9px] text-slate-500 uppercase tracking-widest font-bold whitespace-nowrap">
                       {h}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700/20">
+              <tbody className="divide-y divide-slate-100">
                 {filtered.map((node) => {
                   const statusStyle = STATUS_STYLE[node.status];
                   const riskColor = RISK_COLOR[node.inference.riskLevel];
                   return (
                     <tr
                       key={node.id}
-                      className="hover:bg-slate-700/30 transition-colors cursor-pointer group"
+                      className="hover:bg-slate-50 transition-colors cursor-pointer group"
                       onClick={() => onNodeSelect(node)}
                     >
-                      <td className="px-3 py-2.5">
-                        <p className="font-bold text-white text-[11px] group-hover:text-teal-400 transition-colors">
+                      <td className="px-3.5 py-3">
+                        <p className="font-bold text-slate-900 text-[11px] group-hover:text-teal-600 transition-colors">
                           {node.name}
                         </p>
-                        <p className="text-[9px] font-mono text-slate-500">{node.id}</p>
+                        <p className="text-[9px] font-mono text-slate-400 font-semibold">{node.id}</p>
                       </td>
-                      <td className="px-3 py-2.5 text-[10px] text-slate-400 whitespace-nowrap max-w-24 truncate">
+                      <td className="px-3.5 py-3 text-[10px] text-slate-600 font-medium whitespace-nowrap max-w-28 truncate">
                         {node.location.zone}
                       </td>
-                      <td className="px-3 py-2.5">
-                        <span className={`flex items-center gap-1 text-[9px] font-bold ${statusStyle.color}`}>
+                      <td className="px-3.5 py-3">
+                        <span className={`inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full border ${statusStyle.bg} ${statusStyle.color}`}>
                           {statusStyle.icon} {node.status}
                         </span>
                       </td>
-                      <td className="px-3 py-2.5">
-                        <span className={`text-[9px] font-bold ${riskColor}`}>
+                      <td className="px-3.5 py-3">
+                        <span className={`text-[10px] font-bold ${riskColor}`}>
                           {node.inference.riskLevel}
                         </span>
                       </td>
-                      <td className="px-3 py-2.5">
+                      <td className="px-3.5 py-3">
                         <div className="flex items-center gap-1.5 min-w-16">
-                          <div className="w-12 h-1 bg-slate-700 rounded-full overflow-hidden">
+                          <div className="w-12 h-1.5 bg-slate-200 rounded-full overflow-hidden">
                             <div
-                              className={`h-full rounded-full ${node.inference.confidence >= 85 ? "bg-red-400" : node.inference.confidence >= 70 ? "bg-orange-400" : "bg-yellow-400"}`}
+                              className={`h-full rounded-full ${node.inference.confidence >= 85 ? "bg-red-500" : node.inference.confidence >= 70 ? "bg-orange-500" : "bg-amber-500"}`}
                               style={{ width: `${node.inference.confidence}%` }}
                             />
                           </div>
-                          <span className="text-[9px] text-slate-400">
+                          <span className="text-[9px] text-slate-700 font-bold">
                             {node.inference.confidence > 0 ? `${node.inference.confidence}%` : "—"}
                           </span>
                         </div>
                       </td>
-                      <td className="px-3 py-2.5 text-[11px] font-bold text-orange-400">
+                      <td className="px-3.5 py-3 text-[11px] font-bold text-orange-600">
                         {node.telemetry.temperature}°C
                       </td>
-                      <td className="px-3 py-2.5 text-[11px] font-bold text-purple-400">
+                      <td className="px-3.5 py-3 text-[11px] font-bold text-purple-600">
                         {node.telemetry.aqi}
                       </td>
-                      <td className="px-3 py-2.5 text-[11px] font-bold text-blue-400">
+                      <td className="px-3.5 py-3 text-[11px] font-bold text-blue-600">
                         {node.telemetry.waterLevel}m
                       </td>
-                      <td className="px-3 py-2.5">
+                      <td className="px-3.5 py-3">
                         <div className="flex items-center gap-1">
-                          <div className="w-8 h-1 bg-slate-700 rounded-full overflow-hidden">
+                          <div className="w-8 h-1.5 bg-slate-200 rounded-full overflow-hidden">
                             <div
-                              className={`h-full rounded-full ${node.batteryLevel > 50 ? "bg-green-400" : node.batteryLevel > 25 ? "bg-yellow-400" : "bg-red-400"}`}
+                              className={`h-full rounded-full ${node.batteryLevel > 50 ? "bg-emerald-500" : node.batteryLevel > 25 ? "bg-amber-500" : "bg-red-500"}`}
                               style={{ width: `${node.batteryLevel}%` }}
                             />
                           </div>
-                          <span className="text-[9px] text-slate-400">{node.batteryLevel}%</span>
+                          <span className="text-[9px] text-slate-600 font-bold">{node.batteryLevel}%</span>
                         </div>
                       </td>
-                      <td className="px-3 py-2.5 text-[9px] font-mono text-slate-500">
-                        {node.lastSync}
+                      <td className="px-3.5 py-3 text-[10px] font-semibold text-teal-700">
+                        30m interval
                       </td>
-                      <td className="px-3 py-2.5">
-                        <ChevronRight size={13} className="text-slate-600 group-hover:text-teal-400 transition-colors" />
+                      <td className="px-3.5 py-3">
+                        <ChevronRight size={14} className="text-slate-400 group-hover:text-teal-600 transition-colors" />
                       </td>
                     </tr>
                   );
@@ -338,9 +339,9 @@ export default function NodeManagement({ nodes, onNodeSelect }: NodeManagementPr
               </tbody>
             </table>
           </div>
-          <div className="px-4 py-2 border-t border-slate-700/30">
-            <p className="text-[10px] text-slate-600">
-              Showing {filtered.length} of {nodes.length} nodes
+          <div className="px-4 py-2.5 border-t border-slate-200 bg-slate-50/50">
+            <p className="text-[10px] text-slate-500 font-semibold">
+              Showing {filtered.length} of {nodes.length} nodes (30-minute interval updates)
             </p>
           </div>
         </div>

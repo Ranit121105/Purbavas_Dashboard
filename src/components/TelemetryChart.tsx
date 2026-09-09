@@ -9,13 +9,12 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
   ReferenceLine,
   Area,
   AreaChart,
 } from "recharts";
 import type { SensorNode } from "@/lib/mockData";
-import { Activity, TrendingUp } from "lucide-react";
+import { Timer, TrendingUp } from "lucide-react";
 
 interface TelemetryChartProps {
   node: SensorNode;
@@ -34,28 +33,28 @@ interface MetricConfig {
 const METRICS: Record<MetricKey, MetricConfig> = {
   waterLevel: {
     label: "Water Level",
-    color: "#3b82f6",
+    color: "#2563eb",
     unit: "m",
     danger: 4.0,
     warning: 2.5,
   },
   aqi: {
     label: "AQI (PM2.5)",
-    color: "#a78bfa",
+    color: "#7c3aed",
     unit: "µg/m³",
     danger: 150,
     warning: 100,
   },
   temperature: {
     label: "Temperature",
-    color: "#f97316",
+    color: "#ea580c",
     unit: "°C",
     danger: 40,
     warning: 35,
   },
   soilMoisture: {
     label: "Soil Moisture",
-    color: "#10b981",
+    color: "#059669",
     unit: "%",
     danger: 90,
     warning: 75,
@@ -72,17 +71,19 @@ interface CustomTooltipProps {
 function CustomTooltip({ active, payload, label, unit }: CustomTooltipProps) {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-slate-800 border border-slate-600/60 rounded-lg px-3 py-2 shadow-xl">
-        <p className="text-[10px] text-slate-400 mb-1 font-mono">{label}</p>
+      <div className="bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-lg">
+        <p className="text-[10px] text-slate-500 mb-1 font-mono font-bold">
+          Timestamp: {label} (30m sample)
+        </p>
         {payload.map((p, i) => (
           <div key={i} className="flex items-center gap-2">
             <div
-              className="w-2 h-2 rounded-full"
+              className="w-2.5 h-2.5 rounded-full"
               style={{ backgroundColor: p.color }}
             />
-            <span className="text-xs text-slate-300">
+            <span className="text-xs text-slate-600 font-medium">
               {p.name}:{" "}
-              <span className="font-bold text-white">
+              <span className="font-bold text-slate-900">
                 {p.value} {unit}
               </span>
             </span>
@@ -96,7 +97,7 @@ function CustomTooltip({ active, payload, label, unit }: CustomTooltipProps) {
 
 export default function TelemetryChart({ node }: TelemetryChartProps) {
   const [activeMetric, setActiveMetric] = useState<MetricKey>("waterLevel");
-  const [chartType, setChartType] = useState<"line" | "area">("area");
+  const [chartType, setChartType] = useState<"area" | "line">("area");
 
   const metric = METRICS[activeMetric];
   const data = node.history;
@@ -116,29 +117,36 @@ export default function TelemetryChart({ node }: TelemetryChartProps) {
   const trendColor =
     activeMetric === "soilMoisture"
       ? currentVal > lastVal
-        ? "text-yellow-400"
-        : "text-green-400"
+        ? "text-amber-600"
+        : "text-emerald-600"
       : currentVal > lastVal
-        ? "text-red-400"
-        : "text-green-400";
+        ? "text-red-600"
+        : "text-emerald-600";
 
   return (
-    <div className="flex flex-col h-full bg-slate-800/50 border border-slate-700/60 rounded-xl overflow-hidden">
+    <div className="flex flex-col h-full bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
       {/* Header */}
-      <div className="p-4 border-b border-slate-700/40">
+      <div className="p-4 border-b border-slate-200 bg-slate-50/50">
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-blue-500/15 border border-blue-500/30 flex items-center justify-center">
-              <Activity size={14} className="text-blue-400" />
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center">
+              <Timer size={16} className="text-blue-600" />
             </div>
             <div>
-              <p className="text-xs font-bold text-white">Live Telemetry</p>
-              <p className="text-[10px] text-slate-500">{node.name} · {node.id}</p>
+              <div className="flex items-center gap-2">
+                <p className="text-xs font-bold text-slate-900">Telemetry (30-min interval)</p>
+                <span className="text-[9px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-1.5 py-0.2 rounded-md">
+                  30m Sampling
+                </span>
+              </div>
+              <p className="text-[10px] text-slate-500 font-medium">
+                {node.name} · Periodic 30-minute readings
+              </p>
             </div>
           </div>
-          <div className="flex items-center gap-1.5">
-            <TrendingUp size={11} className={trendColor} />
-            <span className={`text-sm font-bold ${trendColor}`}>
+          <div className="flex items-center gap-1.5 bg-white border border-slate-200 px-2.5 py-1 rounded-xl shadow-xs">
+            <TrendingUp size={12} className={trendColor} />
+            <span className={`text-sm font-black ${trendColor}`}>
               {currentVal} {metric.unit}
             </span>
             <span className={`text-xs font-bold ${trendColor}`}>{trend}</span>
@@ -146,22 +154,22 @@ export default function TelemetryChart({ node }: TelemetryChartProps) {
         </div>
 
         {/* Metric Selector */}
-        <div className="flex gap-1.5 flex-wrap">
+        <div className="flex gap-1.5 flex-wrap items-center">
           {(Object.entries(METRICS) as [MetricKey, MetricConfig][]).map(
             ([key, m]) => (
               <button
                 key={key}
                 onClick={() => setActiveMetric(key)}
-                className={`text-[10px] font-semibold px-2.5 py-1 rounded-lg border transition-all ${
+                className={`text-[11px] font-bold px-3 py-1.2 rounded-xl border transition-all ${
                   activeMetric === key
-                    ? "border-opacity-60 text-white"
-                    : "border-slate-700/40 text-slate-500 hover:text-slate-300 hover:border-slate-600"
+                    ? "shadow-xs"
+                    : "border-slate-200 bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100"
                 }`}
                 style={
                   activeMetric === key
                     ? {
-                        backgroundColor: m.color + "20",
-                        borderColor: m.color + "60",
+                        backgroundColor: m.color + "12",
+                        borderColor: m.color + "45",
                         color: m.color,
                       }
                     : {}
@@ -172,15 +180,15 @@ export default function TelemetryChart({ node }: TelemetryChartProps) {
             )
           )}
 
-          <div className="ml-auto flex gap-1">
+          <div className="ml-auto flex gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
             {(["area", "line"] as const).map((t) => (
               <button
                 key={t}
                 onClick={() => setChartType(t)}
-                className={`text-[9px] px-2 py-1 rounded border transition-all capitalize ${
+                className={`text-[10px] font-bold px-2 py-0.5 rounded-md transition-all capitalize ${
                   chartType === t
-                    ? "bg-slate-700 border-slate-600 text-white"
-                    : "border-slate-700/30 text-slate-600 hover:text-slate-400"
+                    ? "bg-white text-slate-900 shadow-xs"
+                    : "text-slate-500 hover:text-slate-800"
                 }`}
               >
                 {t}
@@ -206,42 +214,43 @@ export default function TelemetryChart({ node }: TelemetryChartProps) {
                   x2="0"
                   y2="1"
                 >
-                  <stop offset="5%" stopColor={metric.color} stopOpacity={0.3} />
-                  <stop offset="95%" stopColor={metric.color} stopOpacity={0} />
+                  <stop offset="5%" stopColor={metric.color} stopOpacity={0.25} />
+                  <stop offset="95%" stopColor={metric.color} stopOpacity={0.02} />
                 </linearGradient>
               </defs>
               <CartesianGrid
                 strokeDasharray="3 3"
-                stroke="#1e293b"
+                stroke="#e2e8f0"
                 strokeOpacity={0.8}
               />
               <XAxis
                 dataKey="time"
-                tick={{ fill: "#475569", fontSize: 9, fontFamily: "monospace" }}
-                axisLine={{ stroke: "#1e293b" }}
+                tick={{ fill: "#64748b", fontSize: 9, fontFamily: "monospace", fontWeight: 600 }}
+                axisLine={{ stroke: "#e2e8f0" }}
                 tickLine={false}
-                interval={3}
+                interval={2}
               />
               <YAxis
-                tick={{ fill: "#475569", fontSize: 9, fontFamily: "monospace" }}
+                tick={{ fill: "#64748b", fontSize: 9, fontFamily: "monospace", fontWeight: 600 }}
                 axisLine={false}
                 tickLine={false}
                 width={35}
               />
               <Tooltip
                 content={<CustomTooltip unit={metric.unit} />}
-                cursor={{ stroke: metric.color, strokeWidth: 1, strokeOpacity: 0.4 }}
+                cursor={{ stroke: metric.color, strokeWidth: 1.5, strokeDasharray: "3 3" }}
               />
               {metric.danger !== undefined && (
                 <ReferenceLine
                   y={metric.danger}
-                  stroke="#ef4444"
+                  stroke="#dc2626"
                   strokeDasharray="4 2"
                   strokeWidth={1}
                   label={{
                     value: "Danger",
-                    fill: "#ef4444",
+                    fill: "#dc2626",
                     fontSize: 8,
+                    fontWeight: 700,
                     position: "right",
                   }}
                 />
@@ -249,13 +258,14 @@ export default function TelemetryChart({ node }: TelemetryChartProps) {
               {metric.warning !== undefined && (
                 <ReferenceLine
                   y={metric.warning}
-                  stroke="#eab308"
+                  stroke="#d97706"
                   strokeDasharray="4 2"
                   strokeWidth={1}
                   label={{
                     value: "Warning",
-                    fill: "#eab308",
+                    fill: "#d97706",
                     fontSize: 8,
+                    fontWeight: 700,
                     position: "right",
                   }}
                 />
@@ -264,10 +274,10 @@ export default function TelemetryChart({ node }: TelemetryChartProps) {
                 type="monotone"
                 dataKey={activeMetric}
                 stroke={metric.color}
-                strokeWidth={1.5}
+                strokeWidth={2}
                 fill={`url(#gradient-${activeMetric})`}
                 dot={false}
-                activeDot={{ r: 4, fill: metric.color, stroke: "#0f172a", strokeWidth: 2 }}
+                activeDot={{ r: 5, fill: metric.color, stroke: "#ffffff", strokeWidth: 2 }}
                 name={metric.label}
               />
             </AreaChart>
@@ -278,30 +288,30 @@ export default function TelemetryChart({ node }: TelemetryChartProps) {
             >
               <CartesianGrid
                 strokeDasharray="3 3"
-                stroke="#1e293b"
+                stroke="#e2e8f0"
                 strokeOpacity={0.8}
               />
               <XAxis
                 dataKey="time"
-                tick={{ fill: "#475569", fontSize: 9, fontFamily: "monospace" }}
-                axisLine={{ stroke: "#1e293b" }}
+                tick={{ fill: "#64748b", fontSize: 9, fontFamily: "monospace", fontWeight: 600 }}
+                axisLine={{ stroke: "#e2e8f0" }}
                 tickLine={false}
-                interval={3}
+                interval={2}
               />
               <YAxis
-                tick={{ fill: "#475569", fontSize: 9, fontFamily: "monospace" }}
+                tick={{ fill: "#64748b", fontSize: 9, fontFamily: "monospace", fontWeight: 600 }}
                 axisLine={false}
                 tickLine={false}
                 width={35}
               />
               <Tooltip
                 content={<CustomTooltip unit={metric.unit} />}
-                cursor={{ stroke: metric.color, strokeWidth: 1, strokeOpacity: 0.4 }}
+                cursor={{ stroke: metric.color, strokeWidth: 1.5, strokeDasharray: "3 3" }}
               />
               {metric.danger !== undefined && (
                 <ReferenceLine
                   y={metric.danger}
-                  stroke="#ef4444"
+                  stroke="#dc2626"
                   strokeDasharray="4 2"
                   strokeWidth={1}
                 />
@@ -309,7 +319,7 @@ export default function TelemetryChart({ node }: TelemetryChartProps) {
               {metric.warning !== undefined && (
                 <ReferenceLine
                   y={metric.warning}
-                  stroke="#eab308"
+                  stroke="#d97706"
                   strokeDasharray="4 2"
                   strokeWidth={1}
                 />
@@ -318,9 +328,9 @@ export default function TelemetryChart({ node }: TelemetryChartProps) {
                 type="monotone"
                 dataKey={activeMetric}
                 stroke={metric.color}
-                strokeWidth={1.5}
+                strokeWidth={2}
                 dot={false}
-                activeDot={{ r: 4, fill: metric.color, stroke: "#0f172a", strokeWidth: 2 }}
+                activeDot={{ r: 5, fill: metric.color, stroke: "#ffffff", strokeWidth: 2 }}
                 name={metric.label}
               />
             </LineChart>
@@ -329,29 +339,29 @@ export default function TelemetryChart({ node }: TelemetryChartProps) {
       </div>
 
       {/* Footer stats */}
-      <div className="px-4 py-2 border-t border-slate-700/40 grid grid-cols-3 gap-3">
+      <div className="px-4 py-2.5 border-t border-slate-200 bg-slate-50/50 grid grid-cols-3 gap-3">
         {[
           {
-            label: "Current",
+            label: "Current Reading",
             value: `${currentVal} ${metric.unit}`,
             color: metric.color,
           },
           {
-            label: "24h Max",
+            label: "12h Max (30m interval)",
             value: `${Math.max(...data.map((d) => d[activeMetric])).toFixed(1)} ${metric.unit}`,
-            color: "#ef4444",
+            color: "#dc2626",
           },
           {
-            label: "24h Min",
+            label: "12h Min (30m interval)",
             value: `${Math.min(...data.map((d) => d[activeMetric])).toFixed(1)} ${metric.unit}`,
-            color: "#22c55e",
+            color: "#16a34a",
           },
         ].map((s) => (
           <div key={s.label}>
-            <p className="text-[9px] text-slate-500 uppercase tracking-widest">
+            <p className="text-[9px] text-slate-500 uppercase tracking-wider font-bold">
               {s.label}
             </p>
-            <p className="text-xs font-bold" style={{ color: s.color }}>
+            <p className="text-xs font-black" style={{ color: s.color }}>
               {s.value}
             </p>
           </div>

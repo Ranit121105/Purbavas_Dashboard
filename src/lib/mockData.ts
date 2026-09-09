@@ -69,10 +69,13 @@ function generateHistory(
 ) {
   const history = [];
   const now = Date.now();
+  // Generate 24 intervals representing 12 hours of 30-minute recorded telemetry
   for (let i = 23; i >= 0; i--) {
-    const t = new Date(now - i * 60 * 60 * 1000);
+    const t = new Date(now - i * 30 * 60 * 1000);
+    const hours = t.getHours().toString().padStart(2, "0");
+    const minutes = t.getMinutes() < 30 ? "00" : "30";
     history.push({
-      time: `${t.getHours().toString().padStart(2, "0")}:00`,
+      time: `${hours}:${minutes}`,
       waterLevel: parseFloat(
         Math.max(0, baseWater + (Math.random() - 0.5) * 0.4).toFixed(2)
       ),

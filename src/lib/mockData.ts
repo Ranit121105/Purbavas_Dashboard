@@ -8,10 +8,27 @@ export type HazardType =
   | "Normal";
 export type RiskLevel = "Normal" | "Precursor Detected" | "Alert" | "Critical";
 
+export interface HardwareGps {
+  chipset: string;
+  accuracyMeters: number;
+  satellites: number;
+  fixType: "3D Fix" | "2D Fix" | "DGPS";
+  macAddress: string;
+  altitudeMeters: number;
+  lastGpsSync: string;
+}
+
 export interface SensorNode {
   id: string;
   name: string;
-  location: { lat: number; lon: number; zone: string };
+  location: {
+    lat: number;
+    lon: number;
+    zone: string;
+    altitude: number;
+    gps: HardwareGps;
+  };
+  gps?: HardwareGps;
   status: NodeStatus;
   wifiSignal: number; // dBm -30 to -90
   batteryLevel: number; // 0-100%
@@ -95,7 +112,21 @@ export const INITIAL_NODES: SensorNode[] = [
   {
     id: "ESP32-001",
     name: "Riverside Alpha",
-    location: { lat: 14.12, lon: 121.23, zone: "Zone A – River Basin" },
+    location: {
+      lat: 14.1205,
+      lon: 121.2312,
+      zone: "Zone A – River Basin",
+      altitude: 48,
+      gps: {
+        chipset: "NEO-M8N GNSS",
+        accuracyMeters: 1.8,
+        satellites: 12,
+        fixType: "3D Fix",
+        macAddress: "48:E7:29:A1:3B:10",
+        altitudeMeters: 48,
+        lastGpsSync: "4s ago",
+      },
+    },
     status: "Online",
     wifiSignal: -45,
     batteryLevel: 87,
@@ -126,7 +157,21 @@ export const INITIAL_NODES: SensorNode[] = [
   {
     id: "ESP32-002",
     name: "Forest Bravo",
-    location: { lat: 14.25, lon: 121.45, zone: "Zone B – Forest Cover" },
+    location: {
+      lat: 14.2514,
+      lon: 121.4528,
+      zone: "Zone B – Forest Cover",
+      altitude: 215,
+      gps: {
+        chipset: "NEO-M8N GNSS",
+        accuracyMeters: 2.2,
+        satellites: 10,
+        fixType: "3D Fix",
+        macAddress: "48:E7:29:A1:3B:11",
+        altitudeMeters: 215,
+        lastGpsSync: "8s ago",
+      },
+    },
     status: "Online",
     wifiSignal: -62,
     batteryLevel: 73,
@@ -157,7 +202,21 @@ export const INITIAL_NODES: SensorNode[] = [
   {
     id: "ESP32-003",
     name: "Urban Charlie",
-    location: { lat: 14.08, lon: 121.31, zone: "Zone C – Urban Core" },
+    location: {
+      lat: 14.0825,
+      lon: 121.3142,
+      zone: "Zone C – Urban Core",
+      altitude: 72,
+      gps: {
+        chipset: "NEO-M8N GNSS",
+        accuracyMeters: 1.5,
+        satellites: 14,
+        fixType: "3D Fix",
+        macAddress: "48:E7:29:A1:3B:12",
+        altitudeMeters: 72,
+        lastGpsSync: "2s ago",
+      },
+    },
     status: "Online",
     wifiSignal: -38,
     batteryLevel: 92,
@@ -188,7 +247,21 @@ export const INITIAL_NODES: SensorNode[] = [
   {
     id: "ESP32-004",
     name: "Highland Delta",
-    location: { lat: 14.33, lon: 121.18, zone: "Zone D – Highland Slopes" },
+    location: {
+      lat: 14.3321,
+      lon: 121.1845,
+      zone: "Zone D – Highland Slopes",
+      altitude: 340,
+      gps: {
+        chipset: "NEO-M8N GNSS",
+        accuracyMeters: 2.8,
+        satellites: 9,
+        fixType: "3D Fix",
+        macAddress: "48:E7:29:A1:3B:13",
+        altitudeMeters: 340,
+        lastGpsSync: "15s ago",
+      },
+    },
     status: "Online",
     wifiSignal: -71,
     batteryLevel: 55,
@@ -219,7 +292,21 @@ export const INITIAL_NODES: SensorNode[] = [
   {
     id: "ESP32-005",
     name: "Valley Echo",
-    location: { lat: 14.18, lon: 121.52, zone: "Zone E – Agricultural Valley" },
+    location: {
+      lat: 14.1834,
+      lon: 121.5218,
+      zone: "Zone E – Agricultural Valley",
+      altitude: 95,
+      gps: {
+        chipset: "NEO-M8N GNSS",
+        accuracyMeters: 2.1,
+        satellites: 11,
+        fixType: "3D Fix",
+        macAddress: "48:E7:29:A1:3B:14",
+        altitudeMeters: 95,
+        lastGpsSync: "6s ago",
+      },
+    },
     status: "Online",
     wifiSignal: -54,
     batteryLevel: 68,
@@ -250,7 +337,21 @@ export const INITIAL_NODES: SensorNode[] = [
   {
     id: "ESP32-006",
     name: "Coastal Foxtrot",
-    location: { lat: 13.98, lon: 121.42, zone: "Zone F – Coastal Belt" },
+    location: {
+      lat: 13.9841,
+      lon: 121.4239,
+      zone: "Zone F – Coastal Belt",
+      altitude: 12,
+      gps: {
+        chipset: "NEO-M8N GNSS",
+        accuracyMeters: 3.5,
+        satellites: 8,
+        fixType: "2D Fix",
+        macAddress: "48:E7:29:A1:3B:15",
+        altitudeMeters: 12,
+        lastGpsSync: "1m ago",
+      },
+    },
     status: "Low-Bandwidth",
     wifiSignal: -82,
     batteryLevel: 34,
@@ -281,7 +382,21 @@ export const INITIAL_NODES: SensorNode[] = [
   {
     id: "ESP32-007",
     name: "Ridge Golf",
-    location: { lat: 14.41, lon: 121.36, zone: "Zone G – Northern Ridge" },
+    location: {
+      lat: 14.4128,
+      lon: 121.3654,
+      zone: "Zone G – Northern Ridge",
+      altitude: 280,
+      gps: {
+        chipset: "NEO-M8N GNSS",
+        accuracyMeters: 1.6,
+        satellites: 13,
+        fixType: "3D Fix",
+        macAddress: "48:E7:29:A1:3B:16",
+        altitudeMeters: 280,
+        lastGpsSync: "5s ago",
+      },
+    },
     status: "Online",
     wifiSignal: -49,
     batteryLevel: 81,
@@ -312,7 +427,21 @@ export const INITIAL_NODES: SensorNode[] = [
   {
     id: "ESP32-008",
     name: "Wetland Hotel",
-    location: { lat: 14.05, lon: 121.15, zone: "Zone H – Wetlands" },
+    location: {
+      lat: 14.0518,
+      lon: 121.1539,
+      zone: "Zone H – Wetlands",
+      altitude: 24,
+      gps: {
+        chipset: "NEO-M8N GNSS",
+        accuracyMeters: 2.0,
+        satellites: 11,
+        fixType: "3D Fix",
+        macAddress: "48:E7:29:A1:3B:17",
+        altitudeMeters: 24,
+        lastGpsSync: "10s ago",
+      },
+    },
     status: "Online",
     wifiSignal: -58,
     batteryLevel: 76,
@@ -343,7 +472,21 @@ export const INITIAL_NODES: SensorNode[] = [
   {
     id: "ESP32-009",
     name: "Summit India",
-    location: { lat: 14.48, lon: 121.28, zone: "Zone I – Summit Station" },
+    location: {
+      lat: 14.4812,
+      lon: 121.2845,
+      zone: "Zone I – Summit Station",
+      altitude: 610,
+      gps: {
+        chipset: "NEO-M8N GNSS",
+        accuracyMeters: 8.5,
+        satellites: 4,
+        fixType: "2D Fix",
+        macAddress: "48:E7:29:A1:3B:18",
+        altitudeMeters: 610,
+        lastGpsSync: "2h ago",
+      },
+    },
     status: "Offline",
     wifiSignal: -95,
     batteryLevel: 12,
@@ -374,7 +517,21 @@ export const INITIAL_NODES: SensorNode[] = [
   {
     id: "ESP32-010",
     name: "Plains Juliet",
-    location: { lat: 14.22, lon: 121.08, zone: "Zone J – Plains" },
+    location: {
+      lat: 14.2215,
+      lon: 121.0824,
+      zone: "Zone J – Plains",
+      altitude: 64,
+      gps: {
+        chipset: "NEO-M8N GNSS",
+        accuracyMeters: 1.4,
+        satellites: 15,
+        fixType: "3D Fix",
+        macAddress: "48:E7:29:A1:3B:19",
+        altitudeMeters: 64,
+        lastGpsSync: "3s ago",
+      },
+    },
     status: "Online",
     wifiSignal: -43,
     batteryLevel: 95,

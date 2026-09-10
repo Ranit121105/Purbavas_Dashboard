@@ -351,7 +351,7 @@ export default function AlertsFeed({
                       </div>
                       <div>
                         <p className="text-[9px] text-slate-500 uppercase tracking-widest font-bold">Timestamp</p>
-                        <p className="text-[11px] font-mono text-slate-700">
+                        <p className="text-[11px] font-mono text-slate-700" suppressHydrationWarning>
                           {new Date(alert.timestamp).toLocaleTimeString()}
                         </p>
                       </div>

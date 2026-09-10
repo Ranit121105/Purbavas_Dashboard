@@ -40,10 +40,12 @@ export default function Header({
   activeTab,
   onAlertBellClick,
 }: HeaderProps) {
+  const [mounted, setMounted] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
@@ -106,10 +108,12 @@ export default function Header({
           <div className="hidden lg:flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 shadow-xs">
             <Clock size={13} className="text-teal-600" />
             <div className="text-right">
-              <p className="text-xs font-mono font-bold text-slate-900 leading-tight">
-                {formatTime(currentTime)}
+              <p className="text-xs font-mono font-bold text-slate-900 leading-tight" suppressHydrationWarning>
+                {mounted ? formatTime(currentTime) : "--:--:--"}
               </p>
-              <p className="text-[10px] text-slate-500 font-medium">{formatDate(currentTime)}</p>
+              <p className="text-[10px] text-slate-500 font-medium" suppressHydrationWarning>
+                {mounted ? formatDate(currentTime) : "---"}
+              </p>
             </div>
           </div>
 

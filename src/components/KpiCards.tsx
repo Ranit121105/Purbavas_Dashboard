@@ -1,14 +1,14 @@
 "use client";
 
-import { Cpu, AlertTriangle, Wind, MapPin, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { Cpu, AlertTriangle, MapPin, TrendingUp, TrendingDown, Minus, ShieldAlert } from "lucide-react";
 
 interface KpiCardsProps {
   totalNodes: number;
   onlineNodes: number;
   criticalAlerts: number;
   activeAlerts: number;
-  avgAQI: number;
   highestRiskZone: string;
+  hazardZonesCount?: number;
 }
 
 function TrendIcon({ trend }: { trend: "up" | "down" | "flat" }) {
@@ -17,23 +17,15 @@ function TrendIcon({ trend }: { trend: "up" | "down" | "flat" }) {
   return <Minus size={12} className="text-slate-400" />;
 }
 
-function AqiGrade(aqi: number) {
-  if (aqi <= 50) return { label: "Good", color: "text-emerald-600" };
-  if (aqi <= 100) return { label: "Moderate", color: "text-amber-600" };
-  if (aqi <= 150) return { label: "Unhealthy", color: "text-orange-600" };
-  return { label: "Hazardous", color: "text-red-600" };
-}
-
 export default function KpiCards({
   totalNodes,
   onlineNodes,
   criticalAlerts,
   activeAlerts,
-  avgAQI,
   highestRiskZone,
+  hazardZonesCount = 5,
 }: KpiCardsProps) {
   const offlineNodes = totalNodes - onlineNodes;
-  const aqiGrade = AqiGrade(avgAQI);
 
   const cards = [
     {
@@ -79,39 +71,34 @@ export default function KpiCards({
       sparkColor: "bg-red-500",
     },
     {
-      title: "Regional AQI",
-      value: `${avgAQI}`,
-      sub: `PM2.5 average · ${aqiGrade.label}`,
-      icon: <Wind size={20} />,
-      iconBg: "bg-purple-50 border-purple-200 text-purple-600",
-      accentColor: "border-l-purple-500",
+      title: "Active Hazard Zones",
+      value: `${hazardZonesCount}`,
+      sub: "Monitored Indian risk sectors",
+      icon: <ShieldAlert size={20} />,
+      iconBg: "bg-amber-50 border-amber-200 text-amber-600",
+      accentColor: "border-l-amber-500",
       valueSuffix: (
-        <span className="text-sm font-semibold text-slate-400 ml-1">µg/m³</span>
+        <span className="text-sm font-semibold text-slate-400 ml-1">Zones</span>
       ),
-      badge: aqiGrade.label,
-      badgeColor:
-        avgAQI <= 50
-          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-          : avgAQI <= 100
-            ? "bg-amber-50 text-amber-700 border-amber-200"
-            : "bg-orange-50 text-orange-700 border-orange-200",
+      badge: "India Grid",
+      badgeColor: "bg-amber-50 text-amber-700 border-amber-200 font-bold",
       trend: "up" as const,
       sparkBar: null,
-      sparkColor: "bg-purple-500",
+      sparkColor: "bg-amber-500",
     },
     {
       title: "Highest Risk Zone",
       value: "Zone A",
       sub: highestRiskZone,
       icon: <MapPin size={20} />,
-      iconBg: "bg-orange-50 border-orange-200 text-orange-600",
-      accentColor: "border-l-orange-500",
+      iconBg: "bg-red-50 border-red-200 text-red-600",
+      accentColor: "border-l-red-500",
       valueSuffix: null,
-      badge: "FLOOD · 91%",
-      badgeColor: "bg-red-50 text-red-700 border-red-200",
+      badge: "FLOOD · 94%",
+      badgeColor: "bg-red-50 text-red-700 border-red-200 font-bold",
       trend: "down" as const,
       sparkBar: null,
-      sparkColor: "bg-orange-500",
+      sparkColor: "bg-red-500",
     },
   ];
 

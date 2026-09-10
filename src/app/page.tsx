@@ -201,7 +201,7 @@ export default function Dashboard() {
               <div className="flex items-center gap-1.5">
                 <div className="w-2 h-2 rounded-full bg-teal-500" />
                 <span className="text-[11px] text-slate-600 font-medium">
-                  Gateway: 192.168.1.254
+                  Gateway: 10.144.1.254 (India Grid)
                 </span>
               </div>
               <div className="flex items-center gap-1.5">

@@ -188,7 +188,7 @@ export default function Header({
           <span className="w-2 h-2 rounded-full bg-red-500 animate-status-blink shrink-0" />
           <p className="text-xs text-red-700 font-bold">
             ⚠️ {criticalAlerts} CRITICAL ALERT{criticalAlerts > 1 ? "S" : ""}{" "}
-            DETECTED — Immediate flood risk action required in Zone A – River Basin
+            DETECTED — Immediate flood action required in Zone A – Brahmaputra River Basin, Assam
           </p>
         </div>
       )}

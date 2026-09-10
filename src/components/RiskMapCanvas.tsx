@@ -29,11 +29,11 @@ const hazardStyle: Record<
   string,
   { color: string; icon: string; radius: number; label: string }
 > = {
-  Flood: { color: "#2563eb", icon: "≈", radius: 1400, label: "Flood Risk" },
-  Fire: { color: "#dc2626", icon: "♨", radius: 1100, label: "Fire Risk" },
-  Pollution: { color: "#7c3aed", icon: "≋", radius: 950, label: "Air Pollution Risk" },
-  Landslide: { color: "#d97706", icon: "▲", radius: 1200, label: "Landslide Risk" },
-  "Extreme Heat": { color: "#ea580c", icon: "☼", radius: 1000, label: "Heat Hazard Risk" },
+  Flood: { color: "#2563eb", icon: "≈", radius: 45000, label: "Flood Risk" },
+  Fire: { color: "#dc2626", icon: "♨", radius: 35000, label: "Fire Risk" },
+  Pollution: { color: "#7c3aed", icon: "≋", radius: 30000, label: "Air Pollution Risk" },
+  Landslide: { color: "#d97706", icon: "▲", radius: 32000, label: "Landslide Risk" },
+  "Extreme Heat": { color: "#ea580c", icon: "☼", radius: 38000, label: "Heat Hazard Risk" },
 };
 
 const severityOpacity: Record<string, number> = {
@@ -43,38 +43,14 @@ const severityOpacity: Record<string, number> = {
   Normal: 0.08,
 };
 
-// Map tile layers including OpenFreeMap and resilient fallbacks
+// Map tile layers: Only OpenFreeMap Standard
 const TILE_LAYERS = [
   {
-    id: "ofm-positron",
-    name: "OpenFreeMap Positron (Light)",
-    url: "https://tiles.openfreemap.org/styles/positron/{z}/{x}/{y}.png",
-    attribution:
-      '&copy; <a href="https://openfreemap.org" target="_blank" rel="noopener noreferrer">OpenFreeMap</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>',
-    subdomains: ["a", "b", "c"],
-  },
-  {
-    id: "ofm-liberty",
-    name: "OpenFreeMap Liberty",
-    url: "https://tiles.openfreemap.org/styles/liberty/{z}/{x}/{y}.png",
-    attribution:
-      '&copy; <a href="https://openfreemap.org" target="_blank" rel="noopener noreferrer">OpenFreeMap</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>',
-    subdomains: ["a", "b", "c"],
-  },
-  {
-    id: "carto-light",
-    name: "CartoDB Light",
-    url: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-    attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    subdomains: ["a", "b", "c", "d"],
-  },
-  {
-    id: "osm-standard",
-    name: "OpenStreetMap Standard",
+    id: "ofm-standard",
+    name: "OpenFreeMap Standard",
     url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      '&copy; <a href="https://openfreemap.org" target="_blank" rel="noopener noreferrer">OpenFreeMap</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors',
     subdomains: ["a", "b", "c"],
   },
 ];
@@ -96,7 +72,7 @@ function createNodeMarkerIcon(node: SensorNode, isSelected: boolean) {
           ${style.icon}
         </span>
         <span style="position: absolute; bottom: -14px; left: 50%; transform: translateX(-50%); font-size: 8px; font-weight: 700; background: rgba(255,255,255,0.92); color: #1e293b; padding: 1px 4px; border-radius: 4px; border: 1px solid #cbd5e1; white-space: nowrap; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-          ${node.name.split(" ")[1] ?? node.name}
+          ${node.name.split(" ")[0] ?? node.name}
         </span>
       </div>
     `,
@@ -137,8 +113,8 @@ function MapLifecycleHelper({
 
   useEffect(() => {
     if (selectedNode) {
-      map.flyTo([selectedNode.location.lat, selectedNode.location.lon], 12.5, {
-        duration: 0.8,
+      map.flyTo([selectedNode.location.lat, selectedNode.location.lon], 9, {
+        duration: 1.0,
       });
     }
   }, [map, selectedNode]);
@@ -151,7 +127,6 @@ export default function RiskMapCanvas({
   onNodeClick,
   selectedNodeId,
 }: Props) {
-  const [tileLayerIndex, setTileLayerIndex] = useState(0);
   const [filterMode, setFilterMode] = useState<"all" | "risk-only">("all");
   const [showAccuracyRadius, setShowAccuracyRadius] = useState(true);
 
@@ -175,18 +150,18 @@ export default function RiskMapCanvas({
     return nodes.filter((n) => n.status !== "Offline");
   }, [nodes, filterMode]);
 
-  const currentTile = TILE_LAYERS[tileLayerIndex];
+  const currentTile = TILE_LAYERS[0];
 
   return (
     <div className="relative h-full w-full overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 shadow-xs flex flex-col">
       {/* Map Viewport */}
       <div className="relative flex-1 w-full min-h-0">
         <MapContainer
-          center={[14.22, 121.28]}
-          zoom={10}
+          center={[22.3511, 78.6677]}
+          zoom={5}
           scrollWheelZoom
           className="h-full w-full"
-          aria-label="OpenFreeMap disaster risk detection network"
+          aria-label="OpenFreeMap disaster risk detection network India"
         >
           <TileLayer
             key={currentTile.id}
@@ -203,7 +178,7 @@ export default function RiskMapCanvas({
             const isSelected = node.id === selectedNodeId;
             const style = hazardStyle[node.inference.hazardType] || {
               color: "#0d9488",
-              radius: 800,
+              radius: 25000,
             };
             const intensity =
               node.inference.riskLevel === "Critical"
@@ -219,7 +194,7 @@ export default function RiskMapCanvas({
                 {showAccuracyRadius && gps && (
                   <Circle
                     center={[node.location.lat, node.location.lon]}
-                    radius={Math.max(gps.accuracyMeters * 35, 120)}
+                    radius={Math.max(gps.accuracyMeters * 5000, 10000)}
                     pathOptions={{
                       color: "#0d9488",
                       fillColor: "#0d9488",
@@ -297,7 +272,7 @@ export default function RiskMapCanvas({
                         </h4>
                         <div className="flex items-center gap-1 text-[10px] text-slate-500 font-mono">
                           <Cpu size={11} className="text-teal-600" />
-                          <span>{gps?.chipset ?? "GNSS Module"}</span>
+                          <span>{gps?.chipset ?? "NavIC GNSS"}</span>
                         </div>
                       </div>
                       <span
@@ -318,14 +293,14 @@ export default function RiskMapCanvas({
                       <div className="bg-teal-50/70 border border-teal-200/80 rounded-xl p-2 mb-2">
                         <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-teal-800 tracking-wider mb-1">
                           <Satellite size={12} className="text-teal-600" />
-                          <span>Hardware GNSS Fix</span>
+                          <span>NavIC / IRNSS GNSS Fix</span>
                         </div>
                         <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px] text-slate-700 font-mono">
                           <div>
-                            Lat: <b className="text-slate-900">{node.location.lat.toFixed(5)}°N</b>
+                            Lat: <b className="text-slate-900">{node.location.lat.toFixed(4)}°N</b>
                           </div>
                           <div>
-                            Lon: <b className="text-slate-900">{node.location.lon.toFixed(5)}°E</b>
+                            Lon: <b className="text-slate-900">{node.location.lon.toFixed(4)}°E</b>
                           </div>
                           <div>
                             Accuracy: <b className="text-teal-700">±{gps.accuracyMeters}m</b>
@@ -394,7 +369,7 @@ export default function RiskMapCanvas({
               <div className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-teal-600 animate-node-pulse" />
                 <p className="text-[10px] font-black uppercase tracking-wider text-teal-800">
-                  OpenFreeMap Hardware Detection
+                  India Disaster Detection Network
                 </p>
               </div>
               <span className="text-[9px] font-bold text-slate-500 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-md">
@@ -413,16 +388,16 @@ export default function RiskMapCanvas({
                 }}
                 className="text-[11px] font-semibold bg-slate-50 border border-slate-200 text-slate-800 rounded-lg px-2 py-1 outline-none w-full cursor-pointer focus:border-teal-500"
               >
-                <optgroup label="Detected Risk Nodes">
+                <optgroup label="Detected Indian Disaster Risk Nodes">
                   {nodes
                     .filter((n) => n.inference.riskLevel !== "Normal")
                     .map((n) => (
-                      <option key={n.id} value={n.id}>
+                      <option key={n.id}>
                         {n.name} · {n.inference.hazardType} ({n.inference.riskLevel})
                       </option>
                     ))}
                 </optgroup>
-                <optgroup label="Nominal Hardware Nodes">
+                <optgroup label="Nominal Indian Sensor Nodes">
                   {nodes
                     .filter((n) => n.inference.riskLevel === "Normal")
                     .map((n) => (
@@ -465,21 +440,11 @@ export default function RiskMapCanvas({
           </div>
         </div>
 
-        {/* Top Right Controls: Tile Layer Switcher */}
+        {/* Top Right Controls: Only OpenFreeMap Standard */}
         <div className="absolute top-3 right-3 z-[500] flex items-center gap-1.5">
-          <div className="flex items-center gap-1 rounded-2xl bg-white/95 p-1 shadow-md backdrop-blur border border-slate-200/90 text-[10px]">
-            <Layers size={13} className="text-slate-500 ml-1.5" />
-            <select
-              value={tileLayerIndex}
-              onChange={(e) => setTileLayerIndex(Number(e.target.value))}
-              className="font-semibold bg-transparent text-slate-700 rounded-lg px-2 py-1 outline-none cursor-pointer"
-            >
-              {TILE_LAYERS.map((tl, i) => (
-                <option key={tl.id} value={i}>
-                  {tl.name}
-                </option>
-              ))}
-            </select>
+          <div className="flex items-center gap-1.5 rounded-2xl bg-white/95 px-3 py-1.5 shadow-md backdrop-blur border border-slate-200/90 text-[11px] font-bold text-slate-700">
+            <Layers size={13} className="text-teal-600" />
+            <span>OpenFreeMap Standard</span>
           </div>
         </div>
 
@@ -514,16 +479,16 @@ export default function RiskMapCanvas({
             <Satellite size={14} className="animate-pulse text-teal-600" />
             <span>Hardware GNSS:</span>
             <span className="font-mono bg-teal-50 border border-teal-200 px-1.5 py-0.5 rounded text-[11px] text-teal-900">
-              {activeNode.location.gps?.chipset ?? "GNSS Module"} ({activeNode.location.gps?.fixType ?? "3D Fix"})
+              {activeNode.location.gps?.chipset ?? "NavIC GNSS"} ({activeNode.location.gps?.fixType ?? "3D Fix"})
             </span>
           </div>
 
           <div className="hidden sm:flex items-center gap-2 text-slate-600 font-mono text-[11px]">
-            <span>Lat: <b className="text-slate-900">{activeNode.location.lat.toFixed(5)}°N</b></span>
+            <span>Lat: <b className="text-slate-900">{activeNode.location.lat.toFixed(4)}°N</b></span>
             <span>·</span>
-            <span>Lon: <b className="text-slate-900">{activeNode.location.lon.toFixed(5)}°E</b></span>
+            <span>Lon: <b className="text-slate-900">{activeNode.location.lon.toFixed(4)}°E</b></span>
             <span>·</span>
-            <span>Acc: <b className="text-teal-700">±{activeNode.location.gps?.accuracyMeters ?? 2.1}m</b></span>
+            <span>Acc: <b className="text-teal-700">±{activeNode.location.gps?.accuracyMeters ?? 1.4}m</b></span>
             <span>·</span>
             <span>Alt: <b className="text-slate-900">{activeNode.location.gps?.altitudeMeters ?? activeNode.location.altitude}m</b></span>
           </div>

@@ -14,8 +14,6 @@ import {
   Wind,
   Thermometer,
   Zap,
-  Radio,
-  MapPin,
 } from "lucide-react";
 
 interface OverviewTabProps {
@@ -46,6 +44,8 @@ export default function OverviewTab({
     { hazard: "Extreme Heat", count: nodes.filter(n => n.inference.hazardType === "Extreme Heat").length, icon: <Thermometer size={14} />, color: "text-orange-700", bg: "bg-orange-50 border-orange-200" },
   ];
 
+  const activeRiskNodesCount = nodes.filter(n => n.inference.riskLevel !== "Normal" && n.status !== "Offline").length;
+
   return (
     <div className="space-y-4">
       {/* Row 1: KPI Cards */}
@@ -54,8 +54,8 @@ export default function OverviewTab({
         onlineNodes={42}
         criticalAlerts={alerts.filter((a) => a.riskLevel === "Critical").length}
         activeAlerts={alerts.filter((a) => a.riskLevel !== "Normal").length}
-        avgAQI={Math.round(nodes.filter(n => n.status !== "Offline").reduce((a, b) => a + b.telemetry.aqi, 0) / Math.max(1, nodes.filter(n => n.status !== "Offline").length))}
-        highestRiskZone="Zone A – River Basin"
+        hazardZonesCount={activeRiskNodesCount}
+        highestRiskZone="Zone A – Brahmaputra River Basin, Assam"
       />
 
       {/* Row 2: OpenFreeMap Hardware Risk Detection Map + Live 30m Telemetry */}
@@ -67,14 +67,14 @@ export default function OverviewTab({
               <div className="flex items-center gap-2">
                 <Activity size={15} className="text-teal-600" />
                 <p className="text-xs font-bold text-slate-900">
-                  OpenFreeMap · Hardware GNSS Risk Detection
+                  OpenFreeMap Standard · India Disaster Risk Grid
                 </p>
               </div>
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1.5 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded-lg">
                   <div className="w-1.5 h-1.5 rounded-full bg-teal-600 animate-node-pulse" />
                   <span className="text-[10px] text-teal-700 font-bold uppercase tracking-wider">
-                    HARDWARE LOCATED
+                    NAVIC HARDWARE LOCATED
                   </span>
                 </div>
               </div>
@@ -101,7 +101,7 @@ export default function OverviewTab({
             <div className="flex items-center gap-2 mb-2.5">
               <Zap size={14} className="text-amber-500" />
               <p className="text-[11px] font-bold text-slate-900 uppercase tracking-wider">
-                Active Hazard Detection Summary
+                Active India Hazard Detection Summary
               </p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-1.5">
@@ -113,7 +113,7 @@ export default function OverviewTab({
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className={`text-sm font-black ${h.color}`}>{h.count}</span>
-                    <span className="text-[10px] text-slate-500 font-medium">zone{h.count !== 1 ? "s" : ""}</span>
+                    <span className="text-[10px] text-slate-500 font-medium">sector{h.count !== 1 ? "s" : ""}</span>
                   </div>
                 </div>
               ))}
@@ -126,7 +126,7 @@ export default function OverviewTab({
       <div>
         <div className="flex items-center gap-2 mb-2">
           <Cpu size={15} className="text-red-600" />
-          <p className="text-xs font-bold text-slate-900">Edge AI Alert Feed (30-Minute Assessment Cycles)</p>
+          <p className="text-xs font-bold text-slate-900">Edge AI Alert Feed (30-Minute Assessment Cycles · India Grid)</p>
         </div>
         <AlertsFeed
           alerts={alerts}

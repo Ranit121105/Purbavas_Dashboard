@@ -183,7 +183,7 @@ export default function SettingsPanel() {
       <Section title="Display & Theme" icon={<Sun size={14} />}>
         <Toggle label="Light Theme Mode" defaultOn={true} />
         <Toggle label="Animated Node Pulse" defaultOn={true} />
-        <Toggle label="OpenFreeMap Tile Layer" defaultOn={true} />
+        <Toggle label="OpenFreeMap Standard Layer" defaultOn={true} />
         <Toggle label="Show Offline Nodes on Map" defaultOn={true} />
         <NumberInput label="Chart History Duration" defaultVal={12} min={1} max={168} unit="hrs" />
       </Section>
@@ -200,7 +200,7 @@ export default function SettingsPanel() {
       <Section title="Gateway Status" icon={<Radio size={14} />}>
         <div className="py-3 space-y-2">
           {[
-            { label: "Gateway IP", value: "192.168.1.254", color: "text-teal-600" },
+            { label: "Gateway IP", value: "10.144.1.254 (NIC-India Grid)", color: "text-teal-600" },
             { label: "Protocol", value: "MQTT / HTTP Periodic Batches", color: "text-blue-600" },
             { label: "Interval", value: "30-minute cycles", color: "text-slate-800 font-bold" },
             { label: "Active Nodes", value: "42 connected", color: "text-emerald-600" },

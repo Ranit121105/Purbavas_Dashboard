@@ -81,7 +81,7 @@ export default function RiskMapView({ nodes, selectedNode, onNodeClick }: RiskMa
 
         <div className="flex items-center gap-1.5 text-xs text-slate-500 font-semibold bg-white border border-slate-200 px-3 py-1.5 rounded-xl shadow-xs self-start">
           <MapPin size={13} className="text-teal-600" />
-          <span>OpenFreeMap Map Engine</span>
+          <span>OpenFreeMap Standard</span>
         </div>
       </div>
 
@@ -108,7 +108,7 @@ export default function RiskMapView({ nodes, selectedNode, onNodeClick }: RiskMa
           <div className="flex items-center gap-2">
             <Waves size={16} className="text-teal-600" />
             <div>
-              <p className="text-xs font-bold text-slate-900">Detected Location Risk Summary</p>
+              <p className="text-xs font-bold text-slate-900">Detected India Disaster Risk Summary</p>
               <p className="text-[10px] text-slate-500 font-medium">30-minute interval sensor readings and edge AI risk classification</p>
             </div>
           </div>

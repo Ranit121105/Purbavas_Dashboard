@@ -11,7 +11,7 @@ import {
   RadioTower,
   Timer,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useSyncExternalStore } from "react";
 import type { ActiveTab } from "./Sidebar";
 
 interface HeaderProps {
@@ -40,12 +40,15 @@ export default function Header({
   activeTab,
   onAlertBellClick,
 }: HeaderProps) {
-  const [mounted, setMounted] = useState(false);
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+  const [currentTime, setCurrentTime] = useState<Date>(() => new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
